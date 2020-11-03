@@ -14,7 +14,19 @@ const StoryPlayButton = (props) => {
         refreshChat,
         initPayload,
         className,
+        type,
     } = props;
+
+    const playStory = () => {
+        changeShowChat(true);
+        changeChatInitPayload(`/${initPayload}`);
+        refreshChat(true);
+    };
+
+    const runTestCase = () => {
+        console.log('running test case');
+    };
+
     return (
         <Popup
             trigger={(
@@ -23,9 +35,8 @@ const StoryPlayButton = (props) => {
                     size='small'
                     disabled={!initPayload}
                     onClick={() => {
-                        changeShowChat(true);
-                        changeChatInitPayload(`/${initPayload}`);
-                        refreshChat(true);
+                        if (type === 'test_case') runTestCase();
+                        else playStory();
                     }}
                     className={className}
                     data-cy='play-story'
@@ -47,6 +58,7 @@ StoryPlayButton.propTypes = {
     refreshChat: PropTypes.func.isRequired,
     initPayload: PropTypes.string,
     className: PropTypes.string,
+    type: PropTypes.oneOf(['story', 'rule', 'test_case']).isRequired,
 };
 
 StoryPlayButton.defaultProps = {

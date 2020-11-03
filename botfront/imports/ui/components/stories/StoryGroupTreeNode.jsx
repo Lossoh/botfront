@@ -4,6 +4,7 @@ import {
     Icon, Menu, Input, Popup, Dropdown,
 } from 'semantic-ui-react';
 import { formNameIsValid } from '../../../lib/client.safe.utils';
+import { storyTypeCustomizations } from '../../../lib/story.types';
 
 const StoryGroupTreeNode = (props) => {
     const {
@@ -117,33 +118,37 @@ const StoryGroupTreeNode = (props) => {
 
     const cleanStoryId = id => id.replace(/^.*_SMART_/, '');
 
-    const addStoryOrRule = fragmentType => (
-        <Dropdown.Item
-            content={(
-                <>
-                    <span className='small story-title-prefix'>{fragmentType === 'rule' ? <>&gt;&gt;</> : '##'}</span>
-                    {fragmentType === 'rule' ? 'Rule' : 'Story'}
-                </>
-            )}
-            data-cy={`add-${fragmentType}`}
-            {...(!somethingIsMutating
-                ? {
-                    onClick: () => handleAddStory(
-                        item.id,
-                        `${item.title} (${
-                            item.children.length + 1
-                        })`,
-                        showPublish ? 'unpublished' : 'published',
-                        fragmentType,
-                    ),
-                    onMouseDown: (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    },
-                }
-                : {})}
-        />
-    );
+    const addStoryOrRule = (fragmentType) => {
+        const { title, prefix } = storyTypeCustomizations[fragmentType];
+        return (
+            <Dropdown.Item
+                content={(
+                    <>
+                        <span className='small story-title-prefix'>{prefix}</span>
+                        {title}
+                    </>
+                )}
+                data-cy={`add-${fragmentType}`}
+                {...(!somethingIsMutating
+                    ? {
+                        onClick: () => handleAddStory(
+                            item.id,
+                            `${item.title} (${
+                                item.children.length + 1
+                            })`,
+                            showPublish ? 'unpublished' : 'published',
+                            fragmentType,
+                        ),
+                        onMouseDown: (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        },
+                    }
+                    : {})}
+            />
+        );
+    };
+
 
     const renderItemActions = () => (
         <div className={`item-actions ${disabled ? 'hidden' : ''}`}>
@@ -181,6 +186,7 @@ const StoryGroupTreeNode = (props) => {
                                     <Dropdown.Menu>
                                         {addStoryOrRule('story')}
                                         {addStoryOrRule('rule')}
+                                        {addStoryOrRule('test_case')}
                                     </Dropdown.Menu>
                                 </Dropdown>,
                                 'Add story or form',
