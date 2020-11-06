@@ -5,11 +5,15 @@ import PropTypes from 'prop-types';
 import IntentLabel from './IntentLabel';
 import EntityLabel from './EntityLabel';
 
+import { parseTextEntities } from '../../../../lib/filterExamples';
+
 function UserUtteranceViewer(props) {
     const {
         value, onChange, disableEditing, showIntent, disabled, onClick,
     } = props;
-    const { text = '', intent = '', entities = [] } = value;
+
+    const { text = '', intent = '', entities = [] } = useMemo(() => parseTextEntities(value), [value]);
+
     const [textSelection, setSelection] = useState(null);
     const mouseDown = useRef(false);
     const setMouseDown = (v) => { mouseDown.current = v; };

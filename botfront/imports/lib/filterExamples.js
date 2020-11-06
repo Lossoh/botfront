@@ -35,3 +35,35 @@ export const _appendSynonymsToText = (exampleParam, entitySynonyms) => {
     });
     return example;
 };
+
+export const parseTextEntities = (value) => {
+    let parsedText = value.text;
+    const parsedEntities = [...(value.entities || [])];
+    const hasEntity = /\[.*\]{".*":\s*".*"}/g;
+    let charIndex = 0;
+
+    const replaceEntities = (matchedText, relativeStart) => {
+        const start = relativeStart + charIndex;
+        const end = matchedText.replace(/[[]]/g).indexOf(']');
+        const pickupAfter = matchedText.indexOf('"}') + 2;
+        const entityValue = matchedText.slice(1, end);
+        const entityName = matchedText.split(/{"entity":\s*"/)[1].split('"}')[0];
+
+        parsedEntities.push({
+            start, end: end + start - 1, entity: entityName, value: entityValue,
+        });
+
+        let newText = `${matchedText.slice(1, end)}${matchedText.slice(pickupAfter)}`;
+
+        if (hasEntity.test(newText)) {
+            charIndex = end + charIndex;
+            newText = newText.replace(hasEntity, replaceEntities);
+        }
+        return newText;
+    };
+
+    if (value.text && hasEntity.test(value.text)) {
+        parsedText = value.text.replace(hasEntity, replaceEntities);
+    }
+    return { ...value, text: parsedText, entities: parsedEntities };
+};
