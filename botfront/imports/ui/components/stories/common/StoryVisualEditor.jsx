@@ -334,11 +334,11 @@ export default class StoryVisualEditor extends React.Component {
     static contextType = ProjectContext;
 
     render() {
-        const { story, getResponseLocations } = this.props;
-        if (!story) return <div className='story-visual-editor' />;
+        const { story, getResponseLocations, className } = this.props;
+        if (!story) return <div />;
         return (
             <div
-                className='story-visual-editor'
+                className={`story-visual-editor ${className}`}
                 onMouseEnter={() => {
                     this.setState({ loadingResponseLocations: true });
                     const storyResponses = story.reduce((value, { action = '' }) => {
@@ -368,8 +368,10 @@ StoryVisualEditor.propTypes = {
     story: PropTypes.array.isRequired,
     getResponseLocations: PropTypes.func.isRequired,
     mode: PropTypes.oneOf(['story', 'rule_steps', 'rule_condition', 'test_case']),
+    className: PropTypes.string,
 };
 
 StoryVisualEditor.defaultProps = {
     mode: 'story',
+    className: '',
 };
